@@ -17,6 +17,10 @@ import { CartPage } from './components/cart/CartPage';
 import { CustomerDashboard } from './pages/dashboard/CustomerDashboard';
 import { DesignerDashboard } from './pages/dashboard/DesignerDashboard';
 import { AdminDashboard } from './pages/dashboard/AdminDashboard';
+import { ProductSelection } from './pages/ProductSelection';
+import { DesignSelection } from './pages/DesignSelection';
+import { DesignSuitInterface } from './pages/DesignSuitInterface';
+import { Summary } from './pages/Summary';
 import './index.css';
 
 function App() {
@@ -36,6 +40,12 @@ function App() {
                 <Route path="/create" element={<CreateProduct />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/cart" element={<CartPage />} />
+                
+                {/* New User Flow Routes */}
+                <Route path="/flow/product-selection" element={<ProductSelection />} />
+                <Route path="/flow/design-selection" element={<DesignSelection />} />
+                <Route path="/flow/design-suit" element={<DesignSuitInterface />} />
+                <Route path="/flow/summary" element={<Summary />} />
                 
                 {/* Protected Dashboard Routes */}
                 <Route 
