@@ -1,38 +1,31 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { Palette, Package, ArrowRight, Sparkles, TrendingUp, Star } from 'lucide-react';
+import { Palette, Package, ArrowRight, Sparkles, TrendingUp, Users, Star } from 'lucide-react';
 import { Hero } from '../components/home/Hero';
 import { ProductCategories } from '../components/home/ProductCategories';
+import { FeaturedProducts } from '../components/home/FeaturedProducts';
 import { FeaturedCreators } from '../components/home/FeaturedCreators';
 import { Testimonials } from '../components/home/Testimonials';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { mockProducts, mockDesigns } from '../data/mockData';
-import { useApp } from '../context/AppContext';
 
 export function Home() {
   const navigate = useNavigate();
-  const { dispatch } = useApp();
+  const [selectedType, setSelectedType] = useState<'product' | 'design' | null>(null);
 
-  const handleProductSelect = (product: any) => {
-    dispatch({ type: 'SELECT_PRODUCT', payload: product });
-    navigate('/flow/design-selection');
+  const handleProductSelect = (productId: string) => {
+    navigate(`/create?product=${productId}`);
   };
 
-  const handleDesignSelect = (design: any) => {
-    dispatch({ type: 'SELECT_DESIGN', payload: design });
-    navigate('/flow/product-selection');
+  const handleDesignSelect = (designId: string) => {
+    navigate(`/create?design=${designId}`);
   };
 
   const handleQuickStart = (type: 'product' | 'design') => {
-    if (type === 'product') {
-      dispatch({ type: 'SET_FLOW_STEP', payload: 'product-selection' });
-      navigate('/flow/product-selection');
-    } else {
-      dispatch({ type: 'SET_FLOW_STEP', payload: 'design-selection' });
-      navigate('/flow/design-selection');
-    }
+    setSelectedType(type);
+    navigate(`/create?type=${type}`);
   };
 
   return (
@@ -139,7 +132,7 @@ export function Home() {
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true }}
                       transition={{ delay: index * 0.1 }}
-                      onClick={() => handleProductSelect(product)}
+                      onClick={() => handleProductSelect(product.id)}
                       className="group"
                     >
                       <Card className="p-3 hover:shadow-lg transition-all group-hover:scale-105">
@@ -170,7 +163,7 @@ export function Home() {
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true }}
                       transition={{ delay: index * 0.1 }}
-                      onClick={() => handleDesignSelect(design)}
+                      onClick={() => handleDesignSelect(design.id)}
                       className="group"
                     >
                       <Card className="p-3 hover:shadow-lg transition-all group-hover:scale-105">
@@ -192,6 +185,7 @@ export function Home() {
       </section>
 
       <ProductCategories />
+      <FeaturedProducts />
       <FeaturedCreators />
       <Testimonials />
     </div>
