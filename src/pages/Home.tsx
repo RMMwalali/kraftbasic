@@ -1,18 +1,23 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+<<<<<<< HEAD
 import { Palette, Package, ArrowRight, TrendingUp, Star, Plus, Info, Check } from 'lucide-react';
+=======
+import { Palette, Package, ArrowRight, Sparkles, TrendingUp, Users, Star } from 'lucide-react';
+>>>>>>> 3bd94caae1be217f5dd1eea76d1aa32826c7501f
 import { Hero } from '../components/home/Hero';
 import { ProductCategories } from '../components/home/ProductCategories';
+import { FeaturedProducts } from '../components/home/FeaturedProducts';
 import { FeaturedCreators } from '../components/home/FeaturedCreators';
 import { Testimonials } from '../components/home/Testimonials';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { mockProducts, mockDesigns } from '../data/mockData';
-import { useApp } from '../context/AppContext';
 
 export function Home() {
   const navigate = useNavigate();
+<<<<<<< HEAD
   const { dispatch } = useApp();
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
   const [selectedDesigns, setSelectedDesigns] = useState<string[]>([]);
@@ -34,16 +39,21 @@ export function Home() {
         ? prev.filter(id => id !== design.id)
         : [...prev, design.id];
     });
+=======
+  const [selectedType, setSelectedType] = useState<'product' | 'design' | null>(null);
+
+  const handleProductSelect = (productId: string) => {
+    navigate(`/create?product=${productId}`);
+  };
+
+  const handleDesignSelect = (designId: string) => {
+    navigate(`/create?design=${designId}`);
+>>>>>>> 3bd94caae1be217f5dd1eea76d1aa32826c7501f
   };
 
   const handleQuickStart = (type: 'product' | 'design') => {
-    if (type === 'product') {
-      dispatch({ type: 'SET_FLOW_STEP', payload: 'product-selection' });
-      navigate('/flow/product-selection');
-    } else {
-      dispatch({ type: 'SET_FLOW_STEP', payload: 'design-selection' });
-      navigate('/flow/design-selection');
-    }
+    setSelectedType(type);
+    navigate(`/create?type=${type}`);
   };
 
   const handleContinueWithSelections = () => {
@@ -204,6 +214,7 @@ export function Home() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
               {/* Popular Products */}
               <div>
+<<<<<<< HEAD
                 <div className="flex items-center justify-between mb-6">
                   <h4 className="text-heading-small text-gray-900 flex items-center">
                     <TrendingUp className="h-5 w-5 text-gray-600 mr-2" />
@@ -251,11 +262,40 @@ export function Home() {
                       </motion.div>
                     );
                   })}
+=======
+                <h4 className="font-semibold text-gray-900 mb-4 flex items-center">
+                  <TrendingUp className="h-5 w-5 text-green-500 mr-2" />
+                  Popular Products
+                </h4>
+                <div className="grid grid-cols-2 gap-3">
+                  {mockProducts.slice(0, 4).map((product, index) => (
+                    <motion.button
+                      key={product.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: index * 0.1 }}
+                      onClick={() => handleProductSelect(product.id)}
+                      className="group"
+                    >
+                      <Card className="p-3 hover:shadow-lg transition-all group-hover:scale-105">
+                        <img
+                          src={product.images[0]}
+                          alt={product.name}
+                          className="w-full h-24 object-cover rounded-lg mb-2"
+                        />
+                        <h5 className="font-medium text-gray-900 text-sm truncate">{product.name}</h5>
+                        <p className="text-xs text-gray-600">${product.basePrice}</p>
+                      </Card>
+                    </motion.button>
+                  ))}
+>>>>>>> 3bd94caae1be217f5dd1eea76d1aa32826c7501f
                 </div>
               </div>
 
               {/* Trending Designs */}
               <div>
+<<<<<<< HEAD
                 <div className="flex items-center justify-between mb-6">
                   <h4 className="text-heading-small text-gray-900 flex items-center">
                     <Star className="h-5 w-5 text-gray-600 mr-2" />
@@ -303,6 +343,34 @@ export function Home() {
                       </motion.div>
                     );
                   })}
+=======
+                <h4 className="font-semibold text-gray-900 mb-4 flex items-center">
+                  <Star className="h-5 w-5 text-yellow-500 mr-2" />
+                  Trending Designs
+                </h4>
+                <div className="grid grid-cols-2 gap-3">
+                  {mockDesigns.slice(0, 4).map((design, index) => (
+                    <motion.button
+                      key={design.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: index * 0.1 }}
+                      onClick={() => handleDesignSelect(design.id)}
+                      className="group"
+                    >
+                      <Card className="p-3 hover:shadow-lg transition-all group-hover:scale-105">
+                        <img
+                          src={design.imageUrl}
+                          alt={design.name}
+                          className="w-full h-24 object-cover rounded-lg mb-2"
+                        />
+                        <h5 className="font-medium text-gray-900 text-sm truncate">{design.name}</h5>
+                        <p className="text-xs text-gray-600">${design.price}</p>
+                      </Card>
+                    </motion.button>
+                  ))}
+>>>>>>> 3bd94caae1be217f5dd1eea76d1aa32826c7501f
                 </div>
               </div>
             </div>
@@ -333,6 +401,7 @@ export function Home() {
       </section>
 
       <ProductCategories />
+      <FeaturedProducts />
       <FeaturedCreators />
       <Testimonials />
     </div>
