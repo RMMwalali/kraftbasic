@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 <<<<<<< HEAD
@@ -6,8 +7,10 @@ import { Palette, Package, ArrowRight, TrendingUp, Star, Plus, Info, Check } fro
 =======
 import { Palette, Package, ArrowRight, Sparkles, TrendingUp, Users, Star } from 'lucide-react';
 >>>>>>> 3bd94caae1be217f5dd1eea76d1aa32826c7501f
+import { Palette, Package, ArrowRight, Sparkles, TrendingUp, Users, Star } from 'lucide-react';
 import { Hero } from '../components/home/Hero';
 import { ProductCategories } from '../components/home/ProductCategories';
+import { FeaturedProducts } from '../components/home/FeaturedProducts';
 import { FeaturedProducts } from '../components/home/FeaturedProducts';
 import { FeaturedCreators } from '../components/home/FeaturedCreators';
 import { Testimonials } from '../components/home/Testimonials';
@@ -22,6 +25,7 @@ export function Home() {
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
   const [selectedDesigns, setSelectedDesigns] = useState<string[]>([]);
   const [showExamples, setShowExamples] = useState<{[key: string]: boolean}>({});
+  const [selectedType, setSelectedType] = useState<'product' | 'design' | null>(null);
 
   const handleProductSelect = (product: any) => {
     setSelectedProducts(prev => {
@@ -30,6 +34,8 @@ export function Home() {
         ? prev.filter(id => id !== product.id)
         : [...prev, product.id];
     });
+  const handleProductSelect = (productId: string) => {
+    navigate(`/create?product=${productId}`);
   };
 
   const handleDesignSelect = (design: any) => {
@@ -49,6 +55,8 @@ export function Home() {
   const handleDesignSelect = (designId: string) => {
     navigate(`/create?design=${designId}`);
 >>>>>>> 3bd94caae1be217f5dd1eea76d1aa32826c7501f
+  const handleDesignSelect = (designId: string) => {
+    navigate(`/create?design=${designId}`);
   };
 
   const handleQuickStart = (type: 'product' | 'design') => {
@@ -78,6 +86,8 @@ export function Home() {
     } else if (selectedDesigns.length > 0) {
       navigate('/flow/product-selection');
     }
+    setSelectedType(type);
+    navigate(`/create?type=${type}`);
   };
 
   const toggleExample = (key: string) => {
@@ -276,6 +286,7 @@ export function Home() {
                       viewport={{ once: true }}
                       transition={{ delay: index * 0.1 }}
                       onClick={() => handleProductSelect(product.id)}
+                      onClick={() => handleProductSelect(product.id)}
                       className="group"
                     >
                       <Card className="p-3 hover:shadow-lg transition-all group-hover:scale-105">
@@ -357,6 +368,7 @@ export function Home() {
                       viewport={{ once: true }}
                       transition={{ delay: index * 0.1 }}
                       onClick={() => handleDesignSelect(design.id)}
+                      onClick={() => handleDesignSelect(design.id)}
                       className="group"
                     >
                       <Card className="p-3 hover:shadow-lg transition-all group-hover:scale-105">
@@ -401,6 +413,7 @@ export function Home() {
       </section>
 
       <ProductCategories />
+      <FeaturedProducts />
       <FeaturedProducts />
       <FeaturedCreators />
       <Testimonials />
