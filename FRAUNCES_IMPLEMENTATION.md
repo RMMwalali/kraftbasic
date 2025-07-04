@@ -123,10 +123,6 @@ Connection: postgresql://neondb_owner:npg_dAlp7ui9XkGx@ep-young-lab-a8l6trw6-poo
 
 ## 🔧 Development Setup
 
-### Environment Variables:
-```env
-DATABASE_URL="postgresql://neondb_owner:npg_dAlp7ui9XkGx@ep-young-lab-a8l6trw6-pooler.eastus2.azure.neon.tech/neondb?sslmode=require&channel_binding=require"
-```
 
 ### Commands Available:
 ```bash
