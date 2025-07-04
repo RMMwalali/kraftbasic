@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Package, CheckCircle, Search, Filter, Grid, List, Star } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Package, CheckCircle, Search, Grid, List, Star } from 'lucide-react';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { useApp } from '../context/AppContext';
@@ -22,7 +22,6 @@ export function ProductSelection() {
   const handleProductSelect = (product: Product) => {
     dispatch({ type: 'SELECT_PRODUCT', payload: product });
     
-    // If design is already selected, go to design suit interface
     if (selectedDesign) {
       navigate('/flow/design-suit');
     } else {
@@ -48,219 +47,265 @@ export function ProductSelection() {
   const categories = ['all', 't-shirts', 'hoodies', 'mugs', 'stickers', 'bags'];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 overflow-hidden">
       {/* Mobile Header */}
-      <div className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-gray-200/50 shadow-sm">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-14 md:h-16">
-            <button
+      <motion.div 
+        className="sticky-glass"
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        transition={{ type: "spring", stiffness: 100, damping: 15 }}
+      >
+        <div className="container-glass">
+          <div className="flex items-center justify-between h-16">
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={handleBack}
-              className="flex items-center space-x-2 text-gray-600 hover:text-gray-900"
+              className="text-gray-700 hover:text-gray-900"
             >
-              <ArrowLeft className="h-5 w-5" />
+              <ArrowLeft className="h-5 w-5 mr-2" />
               <span className="hidden sm:inline">Back</span>
-            </button>
+            </Button>
             
             <div className="text-center">
-              <h1 className="text-lg md:text-xl font-bold text-gray-900">Select Product</h1>
+              <h1 className="text-heading-medium text-gray-900">Select Product</h1>
               {selectedDesign && (
-                <p className="text-xs text-gray-600">
+                <p className="text-body-small text-gray-600">
                   Design: {selectedDesign.name}
                 </p>
               )}
             </div>
             
-            <div className="w-10" /> {/* Spacer */}
+            <div className="w-20" /> {/* Spacer */}
           </div>
         </div>
-      </div>
+      </motion.div>
 
-      <div className="container mx-auto px-4 py-6">
+      <div className="container-glass py-8">
         {/* Progress Indicator */}
-        <div className="mb-6">
-          <Card className="p-4 bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200/50">
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="font-semibold text-gray-900">
+        <motion.div 
+          className="mb-8"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+        >
+          <Card variant="glass" size="md" className="overflow-hidden">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-heading-small text-gray-900">
                 {selectedDesign ? 'Choose a Product for Your Design' : 'Choose Your Product'}
               </h2>
-              <div className="text-sm text-gray-600">
+              <div className="text-body-small text-gray-600">
                 Step {selectedDesign ? '2' : '1'} of 4
               </div>
             </div>
             
             <div className="grid grid-cols-2 gap-4">
-              <div className={`p-3 rounded-lg border-2 transition-all ${
+              <div className={`p-4 rounded-xl transition-all duration-300 ${
                 selectedProduct 
-                  ? 'border-green-500 bg-green-50' 
-                  : 'border-blue-500 bg-blue-50'
+                  ? 'glass-strong border-emerald-400 bg-emerald-50/20' 
+                  : 'glass border-blue-400 bg-blue-50/20'
               }`}>
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-3">
                   {selectedProduct ? (
-                    <CheckCircle className="h-5 w-5 text-green-500" />
+                    <CheckCircle className="h-6 w-6 text-emerald-500" />
                   ) : (
-                    <Package className="h-5 w-5 text-blue-500" />
+                    <Package className="h-6 w-6 text-blue-500" />
                   )}
-                  <span className="font-medium text-gray-900">
-                    {selectedProduct ? selectedProduct.name : 'Select Product'}
-                  </span>
+                  <div className="min-w-0 flex-1">
+                    <span className="text-label text-gray-900 block truncate">
+                      {selectedProduct ? selectedProduct.name : 'Select Product'}
+                    </span>
+                    {selectedProduct && (
+                      <p className="text-body-small text-gray-600">${selectedProduct.basePrice}</p>
+                    )}
+                  </div>
                 </div>
-                {selectedProduct && (
-                  <p className="text-sm text-gray-600 mt-1">${selectedProduct.basePrice}</p>
-                )}
               </div>
               
-              <div className={`p-3 rounded-lg border-2 transition-all ${
+              <div className={`p-4 rounded-xl transition-all duration-300 ${
                 selectedDesign 
-                  ? 'border-green-500 bg-green-50' 
-                  : 'border-gray-200 bg-white'
+                  ? 'glass-strong border-emerald-400 bg-emerald-50/20' 
+                  : 'glass border-gray-300 bg-gray-50/20'
               }`}>
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-3">
                   {selectedDesign ? (
-                    <CheckCircle className="h-5 w-5 text-green-500" />
+                    <CheckCircle className="h-6 w-6 text-emerald-500" />
                   ) : (
-                    <Package className="h-5 w-5 text-gray-400" />
+                    <Package className="h-6 w-6 text-gray-400" />
                   )}
-                  <span className="font-medium text-gray-900">
-                    {selectedDesign ? selectedDesign.name : 'Next: Design'}
-                  </span>
+                  <div className="min-w-0 flex-1">
+                    <span className="text-label text-gray-900 block truncate">
+                      {selectedDesign ? selectedDesign.name : 'Next: Design'}
+                    </span>
+                    {selectedDesign && (
+                      <p className="text-body-small text-gray-600">${selectedDesign.price}</p>
+                    )}
+                  </div>
                 </div>
-                {selectedDesign && (
-                  <p className="text-sm text-gray-600 mt-1">${selectedDesign.price}</p>
-                )}
               </div>
             </div>
           </Card>
-        </div>
+        </motion.div>
 
         {/* Search and Filters */}
-        <div className="mb-6">
-          <div className="flex space-x-3 mb-4">
+        <motion.div 
+          className="mb-8"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+        >
+          <div className="flex space-x-4 mb-6">
             <div className="flex-1 relative">
               <input
                 type="text"
                 placeholder="Search products..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="input-glass"
               />
-              <Search className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" />
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
             </div>
             <Button
-              variant="outline"
+              variant="glass"
+              size="md"
               onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
-              className="px-3"
+              className="px-4"
             >
               {viewMode === 'grid' ? <List className="h-5 w-5" /> : <Grid className="h-5 w-5" />}
             </Button>
           </div>
 
           {/* Category Filter */}
-          <div className="flex space-x-2 overflow-x-auto pb-2">
-            {categories.map((category) => (
-              <button
-                key={category}
-                onClick={() => setSelectedCategory(category)}
-                className={`px-4 py-2 rounded-full whitespace-nowrap font-medium transition-all ${
-                  selectedCategory === category
-                    ? 'bg-primary-500 text-white shadow-lg'
-                    : 'bg-white text-gray-600 hover:text-gray-900 border border-gray-200'
-                }`}
-              >
-                {category.charAt(0).toUpperCase() + category.slice(1)}
-              </button>
-            ))}
+          <div className="overflow-x-auto">
+            <div className="flex space-x-3 pb-2 min-w-max">
+              {categories.map((category) => (
+                <button
+                  key={category}
+                  onClick={() => setSelectedCategory(category)}
+                  className={`px-6 py-3 rounded-full text-label transition-all duration-300 whitespace-nowrap ${
+                    selectedCategory === category
+                      ? 'glass-strong text-white bg-gradient-to-r from-indigo-500 to-purple-600 shadow-lg'
+                      : 'glass text-gray-700 hover:glass-strong hover:text-gray-900'
+                  }`}
+                >
+                  {category.charAt(0).toUpperCase() + category.slice(1)}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Warning if no design selected */}
         {!selectedDesign && (
-          <div className="mb-6">
-            <Card className="p-4 bg-amber-50 border-amber-200">
-              <div className="flex items-center space-x-2 text-amber-800">
-                <Package className="h-5 w-5" />
-                <p className="text-sm">
+          <motion.div 
+            className="mb-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <Card variant="glass" className="border-amber-400 bg-amber-50/20">
+              <div className="flex items-center space-x-3 text-amber-800">
+                <Package className="h-6 w-6 flex-shrink-0" />
+                <p className="text-body-medium">
                   After selecting a product, you'll choose a design to complete your custom item.
                 </p>
               </div>
             </Card>
-          </div>
+          </motion.div>
         )}
 
         {/* Products Grid */}
-        <div className={
-          viewMode === 'grid' 
-            ? 'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'
-            : 'space-y-4'
-        }>
+        <motion.div 
+          className={`mb-8 ${
+            viewMode === 'grid' 
+              ? 'grid-responsive'
+              : 'space-y-4'
+          }`}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4 }}
+        >
           {filteredProducts.map((product, index) => (
             <motion.div
               key={product.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.05 }}
+              transition={{ delay: 0.05 * index }}
             >
-              <div 
-                className="cursor-pointer transition-all hover:scale-105"
+              <Card 
+                variant="interactive"
                 onClick={() => handleProductSelect(product)}
+                className={`overflow-hidden ${
+                  selectedProduct?.id === product.id 
+                    ? 'ring-2 ring-indigo-500 bg-indigo-50/20' 
+                    : ''
+                }`}
               >
-                <Card 
-                  className={`overflow-hidden ${
-                    selectedProduct?.id === product.id 
-                      ? 'ring-2 ring-blue-500 bg-blue-50' 
-                      : ''
-                  }`}
-                >
                 <div className="relative">
                   <img
                     src={product.images[0]}
                     alt={product.name}
-                    className={`w-full ${viewMode === 'grid' ? 'h-32 md:h-40' : 'h-24'} object-cover`}
+                    className={`w-full object-cover transition-transform duration-300 ${
+                      viewMode === 'grid' ? 'h-48' : 'h-32'
+                    }`}
                   />
                   {selectedProduct?.id === product.id && (
-                    <div className="absolute top-2 right-2 bg-blue-500 text-white p-1 rounded-full">
-                      <CheckCircle className="h-4 w-4" />
+                    <div className="absolute top-3 right-3 glass-strong p-2 rounded-full">
+                      <CheckCircle className="h-5 w-5 text-emerald-500" />
                     </div>
                   )}
-                  <div className="absolute top-2 left-2 bg-blue-500 text-white px-2 py-1 rounded-full text-xs font-bold">
+                  <div className="absolute top-3 left-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-3 py-1 rounded-full text-body-small font-medium">
                     Product
                   </div>
                 </div>
-                <div className="p-3">
-                  <h3 className="font-medium text-gray-900 text-sm mb-1 truncate">{product.name}</h3>
-                  <p className="text-xs text-gray-600 mb-2 line-clamp-2">{product.description}</p>
+                <div className="p-4">
+                  <h3 className="text-heading-small text-gray-900 mb-2 line-clamp-1">{product.name}</h3>
+                  <p className="text-body-medium text-gray-600 mb-3 line-clamp-2">{product.description}</p>
                   <div className="flex items-center justify-between">
-                    <span className="text-lg font-bold text-gray-900">${product.basePrice}</span>
+                    <span className="text-heading-medium text-gray-900">${product.basePrice}</span>
                     <div className="flex items-center space-x-1">
-                      <Star className="h-3 w-3 text-yellow-400 fill-current" />
-                      <span className="text-xs text-gray-600">{product.rating}</span>
+                      <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                      <span className="text-body-small text-gray-600">{product.rating}</span>
                     </div>
                   </div>
-                                  </div>
-                </Card>
-              </div>
-              </motion.div>
+                </div>
+              </Card>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
         {/* Empty State */}
         {filteredProducts.length === 0 && (
-          <div className="text-center py-12">
-            <Package className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">No products found</h3>
-            <p className="text-gray-600">Try adjusting your search or filter criteria</p>
-          </div>
+          <motion.div 
+            className="text-center py-16"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.3 }}
+          >
+            <Package className="h-20 w-20 text-gray-300 mx-auto mb-6" />
+            <h3 className="text-heading-medium text-gray-900 mb-3">No products found</h3>
+            <p className="text-body-large text-gray-600">Try adjusting your search or filter criteria</p>
+          </motion.div>
         )}
+      </div>
 
-        {/* Next Step Button */}
-        {selectedProduct && !selectedDesign && (
-          <div className="fixed bottom-4 left-4 right-4 md:relative md:bottom-auto md:left-auto md:right-auto md:mt-8">
-            <Card className="p-4 bg-white/95 backdrop-blur-md border border-white/20 shadow-xl">
+      {/* Next Step Button */}
+      {selectedProduct && !selectedDesign && (
+        <motion.div 
+          className="fixed bottom-0 left-0 right-0 p-4 glass-strong border-t border-white/20"
+          initial={{ y: 100 }}
+          animate={{ y: 0 }}
+          transition={{ type: "spring", stiffness: 100, damping: 15 }}
+        >
+          <div className="container-glass">
+            <Card variant="glass" className="overflow-hidden">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-medium text-gray-900">{selectedProduct.name} selected</p>
-                  <p className="text-sm text-gray-600">${selectedProduct.basePrice}</p>
+                  <p className="text-label text-gray-900">{selectedProduct.name} selected</p>
+                  <p className="text-body-small text-gray-600">${selectedProduct.basePrice}</p>
                 </div>
                 <Button 
+                  variant="glass"
                   onClick={() => navigate('/flow/design-selection')}
                   className="flex items-center space-x-2"
                 >
@@ -270,8 +315,8 @@ export function ProductSelection() {
               </div>
             </Card>
           </div>
-        )}
-      </div>
+        </motion.div>
+      )}
     </div>
   );
 }
