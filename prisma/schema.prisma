@@ -1,0 +1,402 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String   @id @default(cuid())
+  email             String   @unique
+  name              String
+  avatar            String?
+  role              UserRole @default(CUSTOMER)
+  isEmailVerified   Boolean  @default(false)
+  preferences       Json?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  // Relationships
+  orders            Order[]
+  designs           Design[]
+  messageThreads    MessageThread[]
+  cartItems         CartItem[]
+  reviews           Review[]
+  notifications     Notification[]
+  
+  @@map("users")
+}
+
+model Product {
+  id          String      @id @default(cuid())
+  name        String
+  description String
+  basePrice   Float
+  category    String
+  subcategory String?
+  images      String[]
+  sizes       String[]
+  colors      String[]
+  tags        String[]
+  isActive    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  
+  // Metadata
+  printableAreas Json      // Array of printable areas with specifications
+  variants       Json?     // Product variants (sizes, colors, etc.)
+  specifications Json?     // Technical specs (material, dimensions, etc.)
+  
+  // Relationships
+  orderItems     OrderItem[]
+  cartItems      CartItem[]
+  messageThreads MessageThread[]
+  reviews        Review[]
+  
+  @@map("products")
+}
+
+model Design {
+  id          String      @id @default(cuid())
+  name        String
+  description String?
+  price       Float
+  imageUrl    String
+  thumbnailUrl String?
+  tags        String[]
+  category    String
+  style       String?
+  colors      String[]
+  isActive    Boolean     @default(true)
+  isPremium   Boolean     @default(false)
+  rating      Float?
+  downloads   Int         @default(0)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  
+  // Designer info
+  creatorId   String
+  creator     User        @relation(fields: [creatorId], references: [id])
+  
+  // Metadata
+  fileFormats Json?       // Available file formats
+  dimensions  Json?       // Design dimensions
+  license     String?     // Usage license
+  
+  // Relationships
+  orderItems     OrderItem[]
+  cartItems      CartItem[]
+  messageThreads MessageThread[]
+  reviews        Review[]
+  
+  @@map("designs")
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  orderNumber     String      @unique
+  customerId      String
+  customer        User        @relation(fields: [customerId], references: [id])
+  
+  status          OrderStatus @default(PENDING)
+  totalAmount     Float
+  subtotal        Float
+  tax             Float?
+  shipping        Float?
+  discount        Float?
+  
+  // Shipping info
+  shippingAddress Json
+  billingAddress  Json?
+  trackingNumber  String?
+  shippingMethod  String?
+  estimatedDelivery DateTime?
+  
+  // Payment info
+  paymentStatus   PaymentStatus @default(PENDING)
+  paymentMethod   String?
+  paymentReference String?
+  
+  // Metadata
+  notes           String?
+  metadata        Json?
+  
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  
+  // Relationships
+  items           OrderItem[]
+  messageThreads  MessageThread[]
+  
+  @@map("orders")
+}
+
+model OrderItem {
+  id          String   @id @default(cuid())
+  orderId     String
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id])
+  
+  designId    String?
+  design      Design?  @relation(fields: [designId], references: [id])
+  
+  quantity    Int
+  unitPrice   Float
+  totalPrice  Float
+  
+  // Customization details
+  size        String?
+  color       String?
+  customization Json?  // Design placement, modifications, etc.
+  
+  // Production status
+  productionStatus ProductionStatus @default(PENDING)
+  designerId       String?
+  designApprovedAt DateTime?
+  printStartedAt   DateTime?
+  printCompletedAt DateTime?
+  shippedAt        DateTime?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("order_items")
+}
+
+model CartItem {
+  id          String   @id @default(cuid())
+  customerId  String
+  customer    User     @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id])
+  
+  designId    String?
+  design      Design?  @relation(fields: [designId], references: [id])
+  
+  quantity    Int
+  size        String?
+  color       String?
+  customization Json?  // Design placement, modifications, etc.
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@unique([customerId, productId, designId, size, color])
+  @@map("cart_items")
+}
+
+model MessageThread {
+  id          String          @id @default(cuid())
+  subject     String?
+  status      ThreadStatus    @default(ACTIVE)
+  priority    ThreadPriority  @default(NORMAL)
+  
+  customerId  String
+  customer    User            @relation(fields: [customerId], references: [id])
+  
+  designerId  String?
+  
+  orderId     String?
+  order       Order?          @relation(fields: [orderId], references: [id])
+  
+  productId   String?
+  product     Product?        @relation(fields: [productId], references: [id])
+  
+  designId    String?
+  design      Design?         @relation(fields: [designId], references: [id])
+  
+  // Design requirements
+  designInstructions Json?
+  designFiles        String[]
+  approvedDesign     String?
+  
+  lastMessageAt DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  // Relationships
+  messages      Message[]
+  
+  @@map("message_threads")
+}
+
+model Message {
+  id        String        @id @default(cuid())
+  threadId  String
+  thread    MessageThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  
+  senderId  String
+  content   String
+  attachments String[]
+  messageType MessageType @default(TEXT)
+  
+  isRead    Boolean   @default(false)
+  readAt    DateTime?
+  
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  
+  @@map("messages")
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  rating    Int      // 1-5 stars
+  comment   String?
+  images    String[]
+  
+  customerId String
+  customer   User     @relation(fields: [customerId], references: [id])
+  
+  productId  String?
+  product    Product? @relation(fields: [productId], references: [id])
+  
+  designId   String?
+  design     Design?  @relation(fields: [designId], references: [id])
+  
+  isApproved Boolean  @default(false)
+  isHelpful  Int      @default(0)
+  
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  
+  @@unique([customerId, productId, designId])
+  @@map("reviews")
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  type      NotificationType
+  title     String
+  message   String
+  data      Json?
+  
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  isRead    Boolean          @default(false)
+  readAt    DateTime?
+  
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  
+  @@map("notifications")
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  slug        String   @unique
+  description String?
+  image       String?
+  parentId    String?
+  parent      Category? @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children    Category[] @relation("CategoryHierarchy")
+  
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("categories")
+}
+
+model Analytics {
+  id        String      @id @default(cuid())
+  event     String      // Event name (page_view, purchase, etc.)
+  data      Json        // Event data
+  userId    String?     // Optional user ID
+  sessionId String?     // Session ID
+  ipAddress String?     // IP address
+  userAgent String?     // User agent
+  timestamp DateTime    @default(now())
+  
+  @@index([event, timestamp])
+  @@index([userId, timestamp])
+  @@map("analytics")
+}
+
+// Enums
+enum UserRole {
+  CUSTOMER
+  DESIGNER
+  ADMIN
+  MODERATOR
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  DESIGNING
+  DESIGN_APPROVED
+  PRINTING
+  PRINTED
+  SHIPPING
+  DELIVERED
+  CANCELLED
+  REFUNDED
+}
+
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+enum ProductionStatus {
+  PENDING
+  DESIGNING
+  DESIGN_REVIEW
+  DESIGN_APPROVED
+  PRINTING
+  PRINTED
+  QUALITY_CHECK
+  SHIPPED
+  DELIVERED
+}
+
+enum ThreadStatus {
+  ACTIVE
+  RESOLVED
+  CLOSED
+  ARCHIVED
+}
+
+enum ThreadPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+enum MessageType {
+  TEXT
+  IMAGE
+  FILE
+  DESIGN_MOCKUP
+  DESIGN_APPROVAL
+  SYSTEM
+}
+
+enum NotificationType {
+  ORDER
+  DESIGN
+  CHAT
+  SYSTEM
+  PROMOTION
+}
