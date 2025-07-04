@@ -10,35 +10,6 @@ interface Notification {
   read: boolean;
 }
 
-interface DesignInstructions {
-  placement: string;
-  size: string;
-  colors: string[];
-  customNotes: string;
-  style: string;
-  mood: string;
-}
-
-interface MessageThread {
-  id: string;
-  productId: string;
-  designId: string;
-  customerId: string;
-  designerId?: string;
-  message: string;
-  instructions: DesignInstructions;
-  timestamp: string;
-  status: 'pending' | 'in_progress' | 'completed';
-}
-
-interface UserFlowState {
-  selectedProduct: Product | null;
-  selectedDesign: Design | null;
-  designInstructions: DesignInstructions | null;
-  currentStep: 'home' | 'product-selection' | 'design-selection' | 'design-suit' | 'summary' | 'checkout';
-  messageThread: MessageThread | null;
-}
-
 interface AppState {
   user: User | null;
   cart: CartItem[];
@@ -48,7 +19,6 @@ interface AppState {
   isLoading: boolean;
   searchQuery: string;
   selectedCategory: string;
-  userFlow: UserFlowState;
 }
 
 type AppAction =
@@ -65,13 +35,7 @@ type AppAction =
   | { type: 'CLEAR_NOTIFICATIONS' }
   | { type: 'SET_LOADING'; payload: boolean }
   | { type: 'SET_SEARCH_QUERY'; payload: string }
-  | { type: 'SET_SELECTED_CATEGORY'; payload: string }
-  | { type: 'SET_FLOW_STEP'; payload: UserFlowState['currentStep'] }
-  | { type: 'SELECT_PRODUCT'; payload: Product }
-  | { type: 'SELECT_DESIGN'; payload: Design }
-  | { type: 'SET_DESIGN_INSTRUCTIONS'; payload: DesignInstructions }
-  | { type: 'CREATE_MESSAGE_THREAD'; payload: Omit<MessageThread, 'id' | 'timestamp'> }
-  | { type: 'RESET_USER_FLOW' };
+  | { type: 'SET_SELECTED_CATEGORY'; payload: string };
 
 const initialState: AppState = {
   user: null,
@@ -82,13 +46,6 @@ const initialState: AppState = {
   isLoading: false,
   searchQuery: '',
   selectedCategory: 'all',
-  userFlow: {
-    selectedProduct: null,
-    selectedDesign: null,
-    designInstructions: null,
-    currentStep: 'home',
-    messageThread: null,
-  },
 };
 
 const AppContext = createContext<{
@@ -148,63 +105,6 @@ function appReducer(state: AppState, action: AppAction): AppState {
       return { ...state, searchQuery: action.payload };
     case 'SET_SELECTED_CATEGORY':
       return { ...state, selectedCategory: action.payload };
-    case 'SET_FLOW_STEP':
-      return { 
-        ...state, 
-        userFlow: { ...state.userFlow, currentStep: action.payload } 
-      };
-    case 'SELECT_PRODUCT':
-      return {
-        ...state,
-        userFlow: {
-          ...state.userFlow,
-          selectedProduct: action.payload,
-          currentStep: state.userFlow.selectedDesign ? 'design-suit' : 'design-selection'
-        }
-      };
-    case 'SELECT_DESIGN':
-      return {
-        ...state,
-        userFlow: {
-          ...state.userFlow,
-          selectedDesign: action.payload,
-          currentStep: state.userFlow.selectedProduct ? 'design-suit' : 'product-selection'
-        }
-      };
-    case 'SET_DESIGN_INSTRUCTIONS':
-      return {
-        ...state,
-        userFlow: {
-          ...state.userFlow,
-          designInstructions: action.payload,
-          currentStep: 'summary'
-        }
-      };
-    case 'CREATE_MESSAGE_THREAD':
-      const messageThread: MessageThread = {
-        ...action.payload,
-        id: `thread-${Date.now()}-${Math.random()}`,
-        timestamp: new Date().toISOString(),
-      };
-      return {
-        ...state,
-        userFlow: {
-          ...state.userFlow,
-          messageThread,
-          currentStep: 'checkout'
-        }
-      };
-    case 'RESET_USER_FLOW':
-      return {
-        ...state,
-        userFlow: {
-          selectedProduct: null,
-          selectedDesign: null,
-          designInstructions: null,
-          currentStep: 'home',
-          messageThread: null,
-        }
-      };
     default:
       return state;
   }
@@ -227,6 +127,3 @@ export function useApp() {
   }
   return context;
 }
-
-// Export types for use in other components
-export type { DesignInstructions, MessageThread, UserFlowState };
