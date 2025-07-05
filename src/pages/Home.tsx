@@ -1,16 +1,9 @@
 import React, { useState } from 'react';
-import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-<<<<<<< HEAD
-import { Palette, Package, ArrowRight, TrendingUp, Star, Plus, Info, Check } from 'lucide-react';
-=======
-import { Palette, Package, ArrowRight, Sparkles, TrendingUp, Users, Star } from 'lucide-react';
->>>>>>> 3bd94caae1be217f5dd1eea76d1aa32826c7501f
-import { Palette, Package, ArrowRight, Sparkles, TrendingUp, Users, Star } from 'lucide-react';
+import { Palette, Package, ArrowRight, TrendingUp, Star, Info, Check } from 'lucide-react';
 import { Hero } from '../components/home/Hero';
 import { ProductCategories } from '../components/home/ProductCategories';
-import { FeaturedProducts } from '../components/home/FeaturedProducts';
 import { FeaturedProducts } from '../components/home/FeaturedProducts';
 import { FeaturedCreators } from '../components/home/FeaturedCreators';
 import { Testimonials } from '../components/home/Testimonials';
@@ -18,74 +11,50 @@ import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { mockProducts, mockDesigns } from '../data/mockData';
 
-export function Home() {
+interface Product {
+  id: string;
+  name: string;
+  basePrice: number;
+  rating?: number;
+  images: string[];
+}
+
+interface Design {
+  id: string;
+  name: string;
+  price: number;
+  rating?: number;
+  imageUrl: string;
+}
+
+const Home: React.FC = () => {
   const navigate = useNavigate();
-<<<<<<< HEAD
-  const { dispatch } = useApp();
-  const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
-  const [selectedDesigns, setSelectedDesigns] = useState<string[]>([]);
   const [showExamples, setShowExamples] = useState<{[key: string]: boolean}>({});
   const [selectedType, setSelectedType] = useState<'product' | 'design' | null>(null);
+  const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
+  const [selectedDesigns, setSelectedDesigns] = useState<string[]>([]);
 
-  const handleProductSelect = (product: any) => {
+  const handleProductSelect = (productId: string) => {
     setSelectedProducts(prev => {
-      const isSelected = prev.includes(product.id);
-      return isSelected 
-        ? prev.filter(id => id !== product.id)
-        : [...prev, product.id];
+      if (prev.includes(productId)) {
+        return prev.filter(id => id !== productId);
+      } else {
+        return [...prev, productId];
+      }
     });
-  const handleProductSelect = (productId: string) => {
-    navigate(`/create?product=${productId}`);
   };
 
-  const handleDesignSelect = (design: any) => {
+  const handleDesignSelect = (designId: string) => {
     setSelectedDesigns(prev => {
-      const isSelected = prev.includes(design.id);
-      return isSelected 
-        ? prev.filter(id => id !== design.id)
-        : [...prev, design.id];
+      if (prev.includes(designId)) {
+        return prev.filter(id => id !== designId);
+      } else {
+        return [...prev, designId];
+      }
     });
-=======
-  const [selectedType, setSelectedType] = useState<'product' | 'design' | null>(null);
-
-  const handleProductSelect = (productId: string) => {
-    navigate(`/create?product=${productId}`);
-  };
-
-  const handleDesignSelect = (designId: string) => {
-    navigate(`/create?design=${designId}`);
->>>>>>> 3bd94caae1be217f5dd1eea76d1aa32826c7501f
-  const handleDesignSelect = (designId: string) => {
-    navigate(`/create?design=${designId}`);
   };
 
   const handleQuickStart = (type: 'product' | 'design') => {
-    setSelectedType(type);
-    navigate(`/create?type=${type}`);
-  };
-
-  const handleContinueWithSelections = () => {
-    // Store multiple selections in context for later use
-    if (selectedProducts.length > 0) {
-      const firstProduct = mockProducts.find(p => p.id === selectedProducts[0]);
-      if (firstProduct) {
-        dispatch({ type: 'SELECT_PRODUCT', payload: firstProduct });
-      }
-    }
-    if (selectedDesigns.length > 0) {
-      const firstDesign = mockDesigns.find(d => d.id === selectedDesigns[0]);
-      if (firstDesign) {
-        dispatch({ type: 'SELECT_DESIGN', payload: firstDesign });
-      }
-    }
-    
-    if (selectedProducts.length > 0 && selectedDesigns.length > 0) {
-      navigate('/flow/design-suit');
-    } else if (selectedProducts.length > 0) {
-      navigate('/flow/design-selection');
-    } else if (selectedDesigns.length > 0) {
-      navigate('/flow/product-selection');
-    }
     setSelectedType(type);
     navigate(`/create?type=${type}`);
   };
@@ -94,19 +63,29 @@ export function Home() {
     setShowExamples(prev => ({ ...prev, [key]: !prev[key] }));
   };
 
+  const handleContinueWithSelections = () => {
+    if (selectedProducts.length > 0 && selectedDesigns.length > 0) {
+      navigate('/flow/design-suit');
+    } else if (selectedProducts.length > 0) {
+      navigate('/flow/design-selection');
+    } else if (selectedDesigns.length > 0) {
+      navigate('/flow/product-selection');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
       <Hero />
       
-      {/* Quick Start Section - Apple-Inspired */}
+      {/* Quick Start Section */}
       <section className="py-16 md:py-24">
-        <div className="container-apple">
+        <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="text-display-medium mb-6"
+              className="text-4xl font-bold mb-6"
             >
               Start Creating Your Custom Product
             </motion.h2>
@@ -224,20 +203,19 @@ export function Home() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
               {/* Popular Products */}
               <div>
-<<<<<<< HEAD
-                <div className="flex items-center justify-between mb-6">
-                  <h4 className="text-heading-small text-gray-900 flex items-center">
-                    <TrendingUp className="h-5 w-5 text-gray-600 mr-2" />
+                <div className="flex items-center justify-between mb-4">
+                  <h4 className="font-semibold text-gray-900 flex items-center">
+                    <TrendingUp className="h-5 w-5 text-green-500 mr-2" />
                     Popular Products
                   </h4>
                   {selectedProducts.length > 0 && (
-                    <span className="text-body-small font-medium text-gray-600">
+                    <span className="text-sm font-medium text-gray-600">
                       {selectedProducts.length} selected
                     </span>
                   )}
                 </div>
                 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-3">
                   {mockProducts.slice(0, 4).map((product, index) => {
                     const isSelected = selectedProducts.includes(product.id);
                     return (
@@ -247,79 +225,49 @@ export function Home() {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ delay: index * 0.1 }}
-                        className={`multi-select-card ${isSelected ? 'selected' : ''}`}
-                        onClick={() => handleProductSelect(product)}
+                        className="group w-full"
+                        onClick={() => handleProductSelect(product.id)}
                       >
-                        <div className="relative">
+                        <Card 
+                          className={`p-3 hover:shadow-lg transition-all group-hover:scale-105 cursor-pointer ${isSelected ? 'ring-2 ring-blue-500' : ''}`}
+                        >
                           <img
                             src={product.images[0]}
                             alt={product.name}
-                            className="w-full h-32 object-cover rounded-lg mb-3"
+                            className="w-full h-24 object-cover rounded-lg mb-2"
                           />
-                          <div className={`selection-indicator ${isSelected ? 'active' : ''}`}>
-                            {isSelected ? <Check className="h-3 w-3" /> : selectedProducts.length + 1}
+                          <h5 className="font-medium text-gray-900 text-sm truncate">{product.name}</h5>
+                          <p className="text-xs text-gray-600">${product.basePrice}</p>
+                          <div className="flex items-center mt-1">
+                            <Star className="h-3 w-3 text-yellow-400 fill-current" />
+                            <span className="text-xs text-gray-500 ml-1">{product.rating || '4.5'}</span>
                           </div>
-                        </div>
-                        
-                        <h5 className="text-label mb-1 line-clamp-1">{product.name}</h5>
-                        <div className="flex items-center justify-between">
-                          <p className="text-body-small text-gray-600">${product.basePrice}</p>
-                          <div className="flex items-center space-x-1">
-                            <Star className="h-3 w-3 text-yellow-500 fill-current" />
-                            <span className="text-body-small text-gray-600">{product.rating}</span>
-                          </div>
-                        </div>
+                          {isSelected && (
+                            <div className="absolute top-2 right-2 bg-blue-500 text-white rounded-full p-1">
+                              <Check className="h-3 w-3" />
+                            </div>
+                          )}
+                        </Card>
                       </motion.div>
                     );
                   })}
-=======
-                <h4 className="font-semibold text-gray-900 mb-4 flex items-center">
-                  <TrendingUp className="h-5 w-5 text-green-500 mr-2" />
-                  Popular Products
-                </h4>
-                <div className="grid grid-cols-2 gap-3">
-                  {mockProducts.slice(0, 4).map((product, index) => (
-                    <motion.button
-                      key={product.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: index * 0.1 }}
-                      onClick={() => handleProductSelect(product.id)}
-                      onClick={() => handleProductSelect(product.id)}
-                      className="group"
-                    >
-                      <Card className="p-3 hover:shadow-lg transition-all group-hover:scale-105">
-                        <img
-                          src={product.images[0]}
-                          alt={product.name}
-                          className="w-full h-24 object-cover rounded-lg mb-2"
-                        />
-                        <h5 className="font-medium text-gray-900 text-sm truncate">{product.name}</h5>
-                        <p className="text-xs text-gray-600">${product.basePrice}</p>
-                      </Card>
-                    </motion.button>
-                  ))}
->>>>>>> 3bd94caae1be217f5dd1eea76d1aa32826c7501f
                 </div>
               </div>
 
               {/* Trending Designs */}
               <div>
-<<<<<<< HEAD
-                <div className="flex items-center justify-between mb-6">
-                  <h4 className="text-heading-small text-gray-900 flex items-center">
-                    <Star className="h-5 w-5 text-gray-600 mr-2" />
+                <div className="flex items-center justify-between mb-4">
+                  <h4 className="font-semibold text-gray-900 flex items-center">
+                    <Star className="h-5 w-5 text-yellow-500 mr-2" />
                     Trending Designs
                   </h4>
                   {selectedDesigns.length > 0 && (
-                    <span className="text-body-small font-medium text-gray-600">
+                    <span className="text-sm font-medium text-gray-600">
                       {selectedDesigns.length} selected
                     </span>
                   )}
                 </div>
-                
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-3">
                   {mockDesigns.slice(0, 4).map((design, index) => {
                     const isSelected = selectedDesigns.includes(design.id);
                     return (
@@ -329,60 +277,23 @@ export function Home() {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ delay: index * 0.1 }}
-                        className={`multi-select-card ${isSelected ? 'selected' : ''}`}
-                        onClick={() => handleDesignSelect(design)}
+                        className="group w-full"
+                        onClick={() => handleDesignSelect(design.id)}
                       >
-                        <div className="relative">
+                        <Card 
+                          className={`p-3 hover:shadow-lg transition-all group-hover:scale-105 cursor-pointer ${isSelected ? 'ring-2 ring-blue-500' : ''}`}
+                        >
                           <img
                             src={design.imageUrl}
                             alt={design.name}
-                            className="w-full h-32 object-cover rounded-lg mb-3"
+                            className="w-full h-24 object-cover rounded-lg mb-2"
                           />
-                          <div className={`selection-indicator ${isSelected ? 'active' : ''}`}>
-                            {isSelected ? <Check className="h-3 w-3" /> : selectedDesigns.length + 1}
-                          </div>
-                        </div>
-                        
-                        <h5 className="text-label mb-1 line-clamp-1">{design.name}</h5>
-                        <div className="flex items-center justify-between">
-                          <p className="text-body-small text-gray-600">${design.price}</p>
-                          <div className="flex items-center space-x-1">
-                            <Star className="h-3 w-3 text-yellow-500 fill-current" />
-                            <span className="text-body-small text-gray-600">{design.rating}</span>
-                          </div>
-                        </div>
+                          <h5 className="font-medium text-gray-900 text-sm truncate">{design.name}</h5>
+                          <p className="text-xs text-gray-600">${design.price}</p>
+                        </Card>
                       </motion.div>
                     );
                   })}
-=======
-                <h4 className="font-semibold text-gray-900 mb-4 flex items-center">
-                  <Star className="h-5 w-5 text-yellow-500 mr-2" />
-                  Trending Designs
-                </h4>
-                <div className="grid grid-cols-2 gap-3">
-                  {mockDesigns.slice(0, 4).map((design, index) => (
-                    <motion.button
-                      key={design.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: index * 0.1 }}
-                      onClick={() => handleDesignSelect(design.id)}
-                      onClick={() => handleDesignSelect(design.id)}
-                      className="group"
-                    >
-                      <Card className="p-3 hover:shadow-lg transition-all group-hover:scale-105">
-                        <img
-                          src={design.imageUrl}
-                          alt={design.name}
-                          className="w-full h-24 object-cover rounded-lg mb-2"
-                        />
-                        <h5 className="font-medium text-gray-900 text-sm truncate">{design.name}</h5>
-                        <p className="text-xs text-gray-600">${design.price}</p>
-                      </Card>
-                    </motion.button>
-                  ))}
->>>>>>> 3bd94caae1be217f5dd1eea76d1aa32826c7501f
                 </div>
               </div>
             </div>
@@ -414,9 +325,10 @@ export function Home() {
 
       <ProductCategories />
       <FeaturedProducts />
-      <FeaturedProducts />
       <FeaturedCreators />
       <Testimonials />
     </div>
   );
-}
+};
+
+export default Home;

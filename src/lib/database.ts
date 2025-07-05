@@ -459,7 +459,7 @@ class DatabaseService {
         
         // Update local storage
         const cartItems = this.getFromLocalStorage('cart', cartData.customerId) || [];
-        const updatedCart = cartItems.filter(item => item.id !== cartItem.id);
+        const updatedCart = cartItems.filter((item: { id: string; }) => item.id !== cartItem.id);
         updatedCart.push(cartItem);
         this.saveToLocalStorage('cart', cartData.customerId, updatedCart);
         

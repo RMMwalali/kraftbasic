@@ -46,17 +46,17 @@ export function Hero() {
             transition={{ duration: 0.6, delay: 0.3 }}
             className="flex flex-wrap justify-center gap-4 mb-12"
           >
-            <div className="glass-card px-6 py-3 flex items-center space-x-2">
-              <Palette className="h-5 w-5 text-gray-700" />
-              <span className="fraunces-medium text-gray-800">Premium Designs</span>
+            <div className="px-6 py-3 flex items-center space-x-2">
+              <Palette className="h-5 w-5 text-indigo-700" />
+              <span className="fraunces-medium text-indigo-800">Premium Designs</span>
             </div>
-            <div className="glass-card px-6 py-3 flex items-center space-x-2">
-              <Package className="h-5 w-5 text-gray-700" />
-              <span className="fraunces-medium text-gray-800">Quality Products</span>
+            <div className="px-6 py-3 flex items-center space-x-2">
+              <Package className="h-5 w-5 text-indigo-700" />
+              <span className="fraunces-medium text-indigo-800">Quality Products</span>
             </div>
-            <div className="glass-card px-6 py-3 flex items-center space-x-2">
-              <Sparkles className="h-5 w-5 text-gray-700" />
-              <span className="fraunces-medium text-gray-800">Expert Designers</span>
+            <div className="px-6 py-3 flex items-center space-x-2">
+              <Sparkles className="h-5 w-5 text-indigo-700" />
+              <span className="fraunces-medium text-indigo-800">Expert Designers</span>
             </div>
           </motion.div>
 

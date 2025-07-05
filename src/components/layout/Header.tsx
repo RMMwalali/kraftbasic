@@ -1,6 +1,6 @@
-import React, { useState, useCallback, useMemo } from 'react';
-import { motion } from 'framer-motion';
-import { Search, ShoppingCart, Bell, Menu, X, User, LogOut, Settings } from 'lucide-react';
+import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Search, ShoppingCart, Bell, Menu, X, User, LogOut, Settings, X as CloseIcon } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '../ui/Button';
 import { CartSlideout } from '../cart/CartSlideout';
@@ -17,6 +17,32 @@ export function Header() {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [hasShaken, setHasShaken] = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
+
+  // Add effect to handle click outside search
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setIsSearchOpen(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  // Add shake animation for first minute
+  useEffect(() => {
+    if (!hasShaken) {
+      const timer = setTimeout(() => {
+        setHasShaken(true);
+      }, 60000); // Stop shaking after 1 minute
+      return () => clearTimeout(timer);
+    }
+  }, [hasShaken]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -135,29 +161,85 @@ export function Header() {
               ))}
             </nav>
 
-            {/* Search Bar - Desktop */}
-            <div className="hidden md:flex items-center flex-1 max-w-md mx-8 relative">
-              <form onSubmit={handleSearch} className="w-full relative">
-                <input
-                  type="text"
-                  placeholder="Search products, designs..."
-                  value={state.searchQuery}
-                  onChange={(e) => handleSearchInputChange(e.target.value)}
-                  onFocus={() => state.searchQuery && setShowSearchResults(true)}
-                  onBlur={() => setTimeout(() => setShowSearchResults(false), 200)}
-                  className="w-full pl-10 pr-4 py-2 bg-white/80 backdrop-blur-sm border border-white/30 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm shadow-lg"
-                />
-                <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
-              </form>
+            {/* Search */}
+            <div className="relative mx-4" ref={searchRef}>
+              <AnimatePresence>
+                {isSearchOpen ? (
+                  <motion.div
+                    initial={{ width: 40, opacity: 0.8 }}
+                    animate={{ width: 240, opacity: 1 }}
+                    exit={{ width: 40, opacity: 0.8 }}
+                    transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                    className="relative overflow-hidden"
+                  >
+                    <form onSubmit={handleSearch} className="relative">
+                      <input
+                        type="text"
+                        placeholder="Search products or designs..."
+                        value={state.searchQuery}
+                        onChange={(e) => {
+                          dispatch({ type: 'SET_SEARCH_QUERY', payload: e.target.value });
+                          setShowSearchResults(true);
+                        }}
+                        className="block w-full pl-10 pr-8 py-2 border border-gray-200 rounded-full bg-white shadow-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent focus:outline-none text-sm transition-all duration-200"
+                        autoFocus
+                      />
+                      <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+                      {(state.searchQuery || isSearchOpen) && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (state.searchQuery) {
+                              dispatch({ type: 'SET_SEARCH_QUERY', payload: '' });
+                            } else {
+                              setIsSearchOpen(false);
+                            }
+                          }}
+                          className="absolute right-2 top-2 p-1 rounded-full hover:bg-gray-100"
+                        >
+                          <X className="h-4 w-4 text-gray-400 hover:text-gray-600" />
+                        </button>
+                      )}
+                    </form>
+                  </motion.div>
+                ) : (
+                  <motion.button
+                    type="button"
+                    onClick={() => setIsSearchOpen(true)}
+                    className="p-2 rounded-full hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-colors"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    animate={!hasShaken ? {
+                      rotate: [0, -5, 5, -5, 0],
+                      transition: { 
+                        repeat: 5, 
+                        duration: 1.5,
+                        ease: "easeInOut"
+                      }
+                    } : {}}
+                  >
+                    <Search className="h-5 w-5 text-gray-600" />
+                  </motion.button>
+                )}
+              </AnimatePresence>
               
-              {/* Search Results Dropdown */}
-              {showSearchResults && (
-                <SearchResults
-                  results={searchResults}
-                  query={state.searchQuery}
-                  onClose={closeSearch}
-                />
-              )}
+              <AnimatePresence>
+                {showSearchResults && searchResults.length > 0 && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute right-0 mt-2 w-72 bg-white rounded-lg shadow-lg overflow-hidden z-50 border border-gray-100"
+                  >
+                    <SearchResults 
+                      results={searchResults} 
+                      query={state.searchQuery}
+                      onClose={() => setShowSearchResults(false)} 
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
             {/* Actions */}

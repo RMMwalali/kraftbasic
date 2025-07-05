@@ -20,7 +20,8 @@ import {
   Image as ImageIcon,
   Lock,
   Calendar,
-  DollarSign
+  DollarSign,
+  ShoppingCart
 } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';

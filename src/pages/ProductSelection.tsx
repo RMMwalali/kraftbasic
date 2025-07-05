@@ -7,6 +7,7 @@ import { Button } from '../components/ui/Button';
 import { useApp } from '../context/AppContext';
 import { mockProducts } from '../data/mockData';
 import { Product } from '../types';
+import { ProductCustomizationModal } from '../components/customize/ProductCustomizationModal';
 
 export function ProductSelection() {
   const navigate = useNavigate();
@@ -14,19 +15,26 @@ export function ProductSelection() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [productToCustomize, setProductToCustomize] = useState<Product | null>(null);
 
   const { userFlow } = state;
   const selectedProduct = userFlow.selectedProduct;
   const selectedDesign = userFlow.selectedDesign;
 
   const handleProductSelect = (product: Product) => {
-    dispatch({ type: 'SELECT_PRODUCT', payload: product });
-    
-    if (selectedDesign) {
-      navigate('/flow/design-suit');
-    } else {
-      navigate('/flow/design-selection');
+    setProductToCustomize(product);
+    setIsModalOpen(true);
+  };
+
+  const handleCustomizationComplete = (design: any) => {
+    if (productToCustomize) {
+      dispatch({ type: 'SELECT_PRODUCT', payload: productToCustomize });
+      dispatch({ type: 'ADD_DESIGN_DETAILS', payload: design });
+      navigate('/design-suit');
     }
+    setIsModalOpen(false);
+    setProductToCustomize(null);
   };
 
   const handleBack = () => {
@@ -48,6 +56,15 @@ export function ProductSelection() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 overflow-hidden">
+      {productToCustomize && (
+        <ProductCustomizationModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          product={productToCustomize}
+          onComplete={handleCustomizationComplete}
+        />
+      )}
+
       {/* Mobile Header */}
       <motion.div 
         className="sticky-glass"
