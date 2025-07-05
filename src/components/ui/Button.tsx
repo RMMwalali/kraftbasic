@@ -2,65 +2,132 @@ import React from 'react';
 import { motion } from 'framer-motion';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
+  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'glass';
   size?: 'sm' | 'md' | 'lg';
-  children: React.ReactNode;
-  isLoading?: boolean;
   glassmorphic?: boolean;
-  as?: 'button' | 'span';
+  loading?: boolean;
+  children: React.ReactNode;
 }
 
 export function Button({
   variant = 'primary',
   size = 'md',
-  children,
-  isLoading = false,
   glassmorphic = false,
+  loading = false,
   className = '',
-  as = 'button',
+  children,
+  disabled,
   ...props
 }: ButtonProps) {
-  const baseClasses = 'font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
-  
+  const sizeClasses = {
+    sm: 'px-4 py-2 text-sm',
+    md: 'px-6 py-3 text-base',
+    lg: 'px-8 py-4 text-lg'
+  };
+
   const variantClasses = {
     primary: glassmorphic 
-      ? 'bg-primary-600/90 backdrop-blur-md hover:bg-primary-700/90 text-white focus:ring-primary-500 border border-primary-500/30 shadow-xl'
-      : 'bg-primary-600 hover:bg-primary-700 text-white focus:ring-primary-500 shadow-lg',
+      ? 'btn-glass text-white' 
+      : 'bg-gradient-to-r from-primary-500 to-secondary-500 text-white shadow-lg hover:shadow-xl',
     secondary: glassmorphic
-      ? 'bg-secondary-600/90 backdrop-blur-md hover:bg-secondary-700/90 text-white focus:ring-secondary-500 border border-secondary-500/30 shadow-xl'
-      : 'bg-secondary-600 hover:bg-secondary-700 text-white focus:ring-secondary-500 shadow-lg',
+      ? 'glass border-2 border-white/30 text-white hover:border-white/50'
+      : 'bg-gray-100 text-gray-900 hover:bg-gray-200',
     outline: glassmorphic
-      ? 'border-2 border-primary-600/50 bg-white/20 backdrop-blur-md text-primary-600 hover:bg-primary-600/10 focus:ring-primary-500 shadow-lg'
-      : 'border-2 border-primary-600 text-primary-600 hover:bg-primary-600 hover:text-white focus:ring-primary-500',
-    ghost: glassmorphic
-      ? 'text-gray-600 hover:text-gray-900 hover:bg-white/20 backdrop-blur-sm focus:ring-gray-500'
-      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:ring-gray-500',
-  };
-  
-  const sizeClasses = {
-    sm: 'px-3 py-2 text-sm',
-    md: 'px-4 py-2.5 text-base',
-    lg: 'px-6 py-3 text-lg',
+      ? 'glass border-2 border-white/30 text-white hover:bg-white/10'
+      : 'border-2 border-primary-500 text-primary-500 hover:bg-primary-50',
+    ghost: 'bg-transparent text-gray-600 hover:bg-gray-100 hover:text-gray-900',
+    glass: 'btn-glass text-white'
   };
 
-  const Component = as === 'span' ? motion.span : motion.button;
+  const baseClasses = `
+    relative
+    inline-flex
+    items-center
+    justify-center
+    font-medium
+    rounded-xl
+    border-none
+    cursor-pointer
+    transition-all
+    duration-300
+    focus:outline-none
+    focus:ring-4
+    focus:ring-primary-500/20
+    disabled:opacity-50
+    disabled:cursor-not-allowed
+    disabled:transform-none
+    ${sizeClasses[size]}
+    ${variantClasses[variant]}
+    ${className}
+  `.trim();
+
+  const motionProps = {
+    whileHover: !disabled && !loading ? { 
+      y: -2,
+      scale: 1.05,
+      transition: { 
+        type: "spring", 
+        stiffness: 400, 
+        damping: 25 
+      }
+    } : {},
+    whileTap: !disabled && !loading ? { 
+      scale: 0.95,
+      y: 0,
+      transition: { 
+        type: "spring", 
+        stiffness: 600, 
+        damping: 30 
+      }
+    } : {},
+    initial: { opacity: 0, scale: 0.9 },
+    animate: { opacity: 1, scale: 1 },
+    transition: { 
+      type: "spring", 
+      stiffness: 200, 
+      damping: 15 
+    }
+  };
+
+  // Separate conflicting HTML props from motion props
+  const { 
+    onAnimationStart, 
+    onAnimationEnd, 
+    onDragStart, 
+    onDragEnd, 
+    onDrag,
+    ...buttonProps 
+  } = props;
 
   return (
-    <Component
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
-      className={`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className}`}
-      disabled={isLoading}
-      {...(as === 'button' ? props : {})}
+    <motion.button
+      className={baseClasses}
+      disabled={disabled || loading}
+      {...motionProps}
+      {...buttonProps}
     >
-      {isLoading ? (
-        <div className="flex items-center justify-center">
-          <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" />
-          Loading...
-        </div>
-      ) : (
-        children
+      {loading && (
+        <motion.div
+          className="absolute inset-0 flex items-center justify-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.2 }}
+        >
+          <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+        </motion.div>
       )}
-    </Component>
+      
+      <motion.span
+        className={`flex items-center justify-center ${loading ? 'opacity-0' : 'opacity-100'}`}
+        transition={{ duration: 0.2 }}
+      >
+        {children}
+      </motion.span>
+
+      {/* Glass effect overlay for interactive feedback */}
+      {(variant === 'glass' || glassmorphic) && (
+        <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-white/10 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+      )}
+    </motion.button>
   );
 }

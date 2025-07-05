@@ -6,7 +6,7 @@ import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { Header } from './components/layout/Header';
 import { Footer } from './components/layout/Footer';
 import { NotificationContainer } from './components/notifications/NotificationContainer';
-import { Home } from './pages/Home';
+import Home from './pages/Home';
 import { Products } from './pages/Products';
 import { Designs } from './pages/Designs';
 import { Creators } from './pages/Creators';

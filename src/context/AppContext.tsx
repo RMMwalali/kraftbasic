@@ -10,6 +10,11 @@ interface Notification {
   read: boolean;
 }
 
+interface UserFlow {
+  selectedProduct: Product | null;
+  selectedDesign: any | null;
+}
+
 interface AppState {
   user: User | null;
   cart: CartItem[];
@@ -19,6 +24,7 @@ interface AppState {
   isLoading: boolean;
   searchQuery: string;
   selectedCategory: string;
+  userFlow: UserFlow;
 }
 
 type AppAction =
@@ -35,7 +41,9 @@ type AppAction =
   | { type: 'CLEAR_NOTIFICATIONS' }
   | { type: 'SET_LOADING'; payload: boolean }
   | { type: 'SET_SEARCH_QUERY'; payload: string }
-  | { type: 'SET_SELECTED_CATEGORY'; payload: string };
+  | { type: 'SET_SELECTED_CATEGORY'; payload: string }
+  | { type: 'SELECT_PRODUCT'; payload: Product | null }
+  | { type: 'ADD_DESIGN_DETAILS'; payload: any };
 
 const initialState: AppState = {
   user: null,
@@ -46,6 +54,10 @@ const initialState: AppState = {
   isLoading: false,
   searchQuery: '',
   selectedCategory: 'all',
+  userFlow: {
+    selectedProduct: null,
+    selectedDesign: null,
+  },
 };
 
 const AppContext = createContext<{
@@ -105,6 +117,16 @@ function appReducer(state: AppState, action: AppAction): AppState {
       return { ...state, searchQuery: action.payload };
     case 'SET_SELECTED_CATEGORY':
       return { ...state, selectedCategory: action.payload };
+    case 'SELECT_PRODUCT':
+      return {
+        ...state,
+        userFlow: { ...state.userFlow, selectedProduct: action.payload },
+      };
+    case 'ADD_DESIGN_DETAILS':
+      return {
+        ...state,
+        userFlow: { ...state.userFlow, selectedDesign: action.payload },
+      };
     default:
       return state;
   }
