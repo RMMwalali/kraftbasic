@@ -165,7 +165,7 @@ export function CustomizationModal({
         textColor: customization.textColor,
         textSize: customization.textSize,
         textPosition: customization.textPosition,
-        image: customization.uploadedImage,
+        image: customization.uploadedImage || undefined,
         imagePosition: customization.imagePosition,
         imageScale: customization.imageScale,
         imageRotation: customization.imageRotation,

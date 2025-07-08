@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AppProvider } from './context/AppContext';
 import { AuthProvider } from './context/AuthContext';
@@ -6,7 +6,7 @@ import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { Header } from './components/layout/Header';
 import { Footer } from './components/layout/Footer';
 import { NotificationContainer } from './components/notifications/NotificationContainer';
-import { Home } from './pages/Home';
+import Home from './pages/Home';
 import { Products } from './pages/Products';
 import { Designs } from './pages/Designs';
 import { Creators } from './pages/Creators';
@@ -17,6 +17,7 @@ import { CartPage } from './components/cart/CartPage';
 import { CustomerDashboard } from './pages/dashboard/CustomerDashboard';
 import { DesignerDashboard } from './pages/dashboard/DesignerDashboard';
 import { AdminDashboard } from './pages/dashboard/AdminDashboard';
+import { SettingsPage } from './pages/SettingsPage';
 import './index.css';
 
 function App() {
@@ -36,6 +37,14 @@ function App() {
                 <Route path="/create" element={<CreateProduct />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/cart" element={<CartPage />} />
+                <Route 
+                  path="/settings" 
+                  element={
+                    <ProtectedRoute>
+                      <SettingsPage />
+                    </ProtectedRoute>
+                  } 
+                />
                 
                 {/* Protected Dashboard Routes */}
                 <Route 

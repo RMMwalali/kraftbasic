@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   X, 
@@ -20,7 +20,8 @@ import {
   Image as ImageIcon,
   Lock,
   Calendar,
-  DollarSign
+  DollarSign,
+  ShoppingCart
 } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
@@ -229,78 +230,98 @@ export function CheckoutModal({ isOpen, onClose, onPaymentSuccess, orderDetails 
 
   const currentStepIndex = steps.findIndex(step => step.id === currentStep);
 
-  if (!isOpen) return null;
+  // If showing success modal, return only the success modal
+  if (showOrderSuccess && completedOrder) {
+    return (
+      <OrderSuccessModal
+        isOpen={showOrderSuccess}
+        onClose={handleOrderSuccessClose}
+        orderDetails={completedOrder}
+      />
+    );
+  }
 
+  // If not open, return null
+  if (!isOpen) {
+    return null;
+  }
+
+  // Main checkout modal
   return (
-    <>
-      <AnimatePresence>
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4"
+        onClick={onClose}
+      >
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4"
-          onClick={onClose}
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0.9, opacity: 0 }}
+          className="bg-white/95 backdrop-blur-md rounded-xl sm:rounded-2xl shadow-2xl w-full max-w-6xl max-h-[95vh] sm:max-h-[90vh] flex flex-col border border-white/20 overflow-hidden"
+          onClick={(e) => e.stopPropagation()}
         >
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.9, opacity: 0 }}
-            className="bg-white/95 backdrop-blur-md rounded-xl sm:rounded-2xl shadow-2xl w-full max-w-6xl max-h-[95vh] sm:max-h-[90vh] overflow-hidden border border-white/20"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Header */}
-            <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200/50 bg-white/80 backdrop-blur-md">
-              <div className="flex items-center space-x-4">
-                <div className="p-2 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-lg shadow-lg">
-                  <ShoppingCart className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
-                </div>
-                <div>
-                  <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">
-                    {currentStep === 'processing' ? 'Processing Payment' : 'Checkout'}
-                  </h2>
-                  <p className="text-xs sm:text-sm text-gray-600 hidden sm:block">
-                    Complete your order securely
-                  </p>
-                </div>
-              </div>
-              
-              {/* Step Indicator */}
-              {currentStep !== 'processing' && (
-                <div className="hidden md:flex items-center space-x-2">
-                  {steps.map((step, index) => (
-                    <div key={step.id} className="flex items-center">
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                        index <= currentStepIndex
-                          ? 'bg-primary-600 text-white' 
-                          : 'bg-gray-200 text-gray-600'
-                      }`}>
-                        {index < currentStepIndex ? (
-                          <Check className="h-4 w-4" />
-                        ) : (
-                          index + 1
-                        )}
-                      </div>
-                      {index < steps.length - 1 && (
-                        <div className={`w-8 h-0.5 mx-2 ${
-                          index < currentStepIndex ? 'bg-primary-600' : 'bg-gray-200'
-                        }`} />
-                      )}
+            {/* Header - Fixed at top */}
+            <div className="flex-shrink-0">
+              <div className="flex flex-col p-4 sm:p-6 border-b border-gray-200/50 bg-white/80 backdrop-blur-md">
+                <div className="flex items-center justify-between w-full mb-4">
+                  <div className="flex items-center space-x-4">
+                    <div className="p-2 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-lg shadow-lg">
+                      <ShoppingCart className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
                     </div>
-                  ))}
+                    <div>
+                      <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">
+                        {currentStep === 'processing' ? 'Processing Payment' : 'Checkout'}
+                      </h2>
+                      <p className="text-xs sm:text-sm text-gray-600">
+                        Complete your order securely
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={onClose}
+                    className="p-2 hover:bg-gray-100/80 rounded-full transition-colors backdrop-blur-sm"
+                  >
+                    <X className="h-5 w-5 sm:h-6 sm:w-6 text-gray-500" />
+                  </button>
                 </div>
-              )}
-              
-              <button
-                onClick={onClose}
-                className="p-2 hover:bg-gray-100/80 rounded-full transition-colors backdrop-blur-sm"
-              >
-                <X className="h-5 w-5 sm:h-6 sm:w-6 text-gray-500" />
-              </button>
+                
+                {/* Step Indicator - Always visible */}
+                {currentStep !== 'processing' && (
+                  <div className="w-full overflow-x-auto pb-2 -mx-2 px-2">
+                    <div className="flex items-center justify-center min-w-max">
+                      {steps.map((step, index) => (
+                        <div key={step.id} className="flex items-center">
+                          <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                            index <= currentStepIndex
+                              ? 'bg-primary-600 text-white' 
+                              : 'bg-gray-200 text-gray-600'
+                          }`}>
+                            {index < currentStepIndex ? (
+                              <Check className="h-4 w-4" />
+                            ) : (
+                              index + 1
+                            )}
+                          </div>
+                          {index < steps.length - 1 && (
+                            <div className={`w-8 sm:w-12 h-0.5 mx-1 sm:mx-2 ${
+                              index < currentStepIndex ? 'bg-primary-600' : 'bg-gray-200'
+                            }`} />
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
 
-            <div className="flex flex-col lg:flex-row h-[calc(95vh-120px)] sm:h-[calc(90vh-120px)]">
-              {/* Main Content */}
-              <div className="flex-1 p-4 sm:p-6 overflow-y-auto">
+            {/* Scrollable Content Area */}
+            <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
+              {/* Main Content - Scrollable */}
+              <div className="flex-1 overflow-y-auto p-4 sm:p-6">
                 {/* Processing Step */}
                 {currentStep === 'processing' && (
                   <div className="flex items-center justify-center h-full">
@@ -748,36 +769,141 @@ export function CheckoutModal({ isOpen, onClose, onPaymentSuccess, orderDetails 
                   </div>
                 </Card>
               </div>
-            </div>
+              
+              {/* Order Summary - Fixed on desktop, scrollable on mobile */}
+              <div className="lg:w-96 border-t lg:border-t-0 lg:border-l border-gray-200/50 p-4 sm:p-6 bg-gray-50/50 overflow-y-auto">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Order Summary</h3>
+                <div className="space-y-4">
+                  {enhancedOrderDetails.items.map((item, index) => (
+                    <div key={index} className="flex justify-between items-start">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-16 h-16 bg-gray-100 rounded-lg overflow-hidden">
+                          {item.image ? (
+                            <img
+                              src={item.image}
+                              alt={item.name}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                              <ImageIcon className="h-6 w-6 text-gray-400" />
+                            </div>
+                          )}
+                        </div>
+                        <div>
+                          <h4 className="text-sm font-medium text-gray-900">
+                            {item.name || 'Custom Product'}
+                          </h4>
+                          <p className="text-xs text-gray-500">
+                            {item.color} · {item.size} · Qty {item.quantity}
+                          </p>
+                          {item.customization && (
+                            <p className="text-xs text-primary-600 mt-1">Custom Design</p>
+                          )}
+                        </div>
+                      </div>
+                      <span className="text-sm font-medium">
+                        ${(item.price * item.quantity).toFixed(2)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
 
-            {/* Footer */}
+                <div className="mt-6 space-y-3 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Subtotal</span>
+                    <span className="font-medium">${enhancedOrderDetails.subtotal.toFixed(2)}</span>
+                  </div>
+                  
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Shipping</span>
+                    <span className="font-medium">
+                      {enhancedOrderDetails.shipping === 0 ? (
+                        <span className="text-green-600">Free</span>
+                      ) : (
+                        `$${enhancedOrderDetails.shipping.toFixed(2)}`
+                      )}
+                    </span>
+                  </div>
+                  
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Tax</span>
+                    <span className="font-medium">${enhancedOrderDetails.tax.toFixed(2)}</span>
+                  </div>
+                  
+                  <div className="border-t border-gray-200 pt-3 flex justify-between">
+                    <span className="font-semibold text-gray-900">Total</span>
+                    <span className="text-xl font-bold text-gray-900">${enhancedOrderDetails.total.toFixed(2)}</span>
+                  </div>
+                </div>
+
+                {/* Security Features */}
+                <div className="mt-6 space-y-3 text-sm text-gray-600">
+                  <div className="flex items-center space-x-2">
+                    <Shield className="h-4 w-4 text-green-500" />
+                    <span>Secure SSL encryption</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Truck className="h-4 w-4 text-blue-500" />
+                    <span>Free shipping on orders over $50</span>
+                  </div>
+                </div>
+
+                {/* Payment Methods */}
+                <Card className="mt-6 p-4">
+                  <h4 className="font-medium text-gray-900 mb-3">We Accept</h4>
+                  <div className="flex space-x-2">
+                    <div className="w-12 h-8 bg-blue-600 rounded flex items-center justify-center text-white text-xs font-bold">
+                      VISA
+                    </div>
+                    <div className="w-12 h-8 bg-red-500 rounded flex items-center justify-center text-white text-xs font-bold">
+                      MC
+                    </div>
+                    <div className="w-12 h-8 bg-blue-500 rounded flex items-center justify-center text-white text-xs font-bold">
+                      AMEX
+                    </div>
+                    <div className="w-12 h-8 bg-yellow-400 rounded flex items-center justify-center text-black text-xs font-bold">
+                      PP
+                    </div>
+                    <div className="w-12 h-8 bg-green-500 rounded flex items-center justify-center text-white text-xs font-bold">
+                      MP
+                    </div>
+                  </div>
+                </Card>
+              </div>
+            </div>
+            
+            {/* Footer - Fixed at bottom */}
             {currentStep !== 'processing' && (
-              <div className="border-t border-gray-200/50 p-4 sm:p-6 bg-white/80 backdrop-blur-md">
-                <div className="flex items-center justify-between">
-                  <div>
+              <div className="sticky bottom-0 border-t border-gray-200/50 p-4 bg-white/90 backdrop-blur-lg shadow-lg">
+                <div className="flex items-center justify-between max-w-6xl mx-auto">
+                  <div className="flex-1">
                     {currentStep !== 'shipping' && (
                       <Button
                         variant="outline"
+                        size="lg"
+                        className="w-full sm:w-auto"
                         onClick={() => {
                           if (currentStep === 'payment') setCurrentStep('shipping');
                           if (currentStep === 'review') setCurrentStep('payment');
                         }}
                       >
                         <ChevronLeft className="h-4 w-4 mr-2" />
-                        Back
+                        <span className="hidden sm:inline">Back</span>
                       </Button>
                     )}
                   </div>
                   
-                  <div className="flex items-center space-x-4">
+                  <div className="flex-1 flex justify-end">
                     {currentStep === 'shipping' && (
                       <Button
                         onClick={() => setCurrentStep('payment')}
                         disabled={!validateShipping()}
-                        className="flex items-center space-x-2"
+                        className="w-full sm:w-auto"
+                        size="lg"
                       >
                         <span>Continue to Payment</span>
-                        <ChevronRight className="h-4 w-4" />
+                        <ChevronRight className="h-4 w-4 ml-2" />
                       </Button>
                     )}
                     
@@ -785,10 +911,11 @@ export function CheckoutModal({ isOpen, onClose, onPaymentSuccess, orderDetails 
                       <Button
                         onClick={() => setCurrentStep('review')}
                         disabled={!validatePayment()}
-                        className="flex items-center space-x-2"
+                        className="w-full sm:w-auto"
+                        size="lg"
                       >
                         <span>Review Order</span>
-                        <ChevronRight className="h-4 w-4" />
+                        <ChevronRight className="h-4 w-4 ml-2" />
                       </Button>
                     )}
                     
@@ -796,18 +923,19 @@ export function CheckoutModal({ isOpen, onClose, onPaymentSuccess, orderDetails 
                       <Button
                         onClick={handlePayment}
                         disabled={isProcessing}
-                        className="flex items-center space-x-2"
+                        className="w-full sm:w-auto"
+                        size="lg"
                       >
                         {isProcessing ? (
-                          <>
-                            <Loader className="h-4 w-4 animate-spin" />
+                          <div>
+                            <Loader className="h-4 w-4 animate-spin mr-2" />
                             <span>Processing...</span>
-                          </>
+                          </div>
                         ) : (
-                          <>
-                            <DollarSign className="h-4 w-4" />
-                            <span>Complete Order ${enhancedOrderDetails.total.toFixed(2)}</span>
-                          </>
+                          <div>
+                            <DollarSign className="h-4 w-4 mr-2" />
+                            <span>Pay ${enhancedOrderDetails.total.toFixed(2)}</span>
+                          </div>
                         )}
                       </Button>
                     )}
@@ -815,22 +943,8 @@ export function CheckoutModal({ isOpen, onClose, onPaymentSuccess, orderDetails 
                 </div>
               </div>
             )}
+            </motion.div>
           </motion.div>
-        </motion.div>
       </AnimatePresence>
-
-      {/* Order Success Modal */}
-      {showOrderSuccess && completedOrder && (
-        <OrderSuccessModal
-          isOpen={showOrderSuccess}
-          onClose={handleOrderSuccessClose}
-          orderDetails={completedOrder}
-          onStartChat={() => {
-            // This will be handled by the parent component
-            handleOrderSuccessClose();
-          }}
-        />
-      )}
-    </>
-  );
-}
+    );
+  }
