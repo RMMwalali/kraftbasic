@@ -26,7 +26,7 @@ export function Hero() {
             transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
             className="mb-8"
           >
-            <h1 className="fraunces-black text-4xl md:text-6xl lg:text-7xl leading-tight mb-6 tracking-tight">
+            <h1 className="fraunces-black text-purple-600 text-4xl md:text-6xl lg:text-7xl leading-tight mb-6 tracking-tight">
               Create Something
               <span className="block text-transparent bg-clip-text bg-gradient-to-r from-gray-900 via-gray-700 to-gray-900">
                 Beautiful
@@ -40,25 +40,25 @@ export function Hero() {
           </motion.div>
 
           {/* Feature Pills */}
-          <motion.div
+          {/* <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
             className="flex flex-wrap justify-center gap-4 mb-12"
           >
             <div className="px-6 py-3 flex items-center space-x-2">
-              <Palette className="h-5 w-5 text-indigo-700" />
+              <Palette className="h-5 w-5 text-indigo-300" />
               <span className="fraunces-medium text-indigo-800">Premium Designs</span>
             </div>
             <div className="px-6 py-3 flex items-center space-x-2">
-              <Package className="h-5 w-5 text-indigo-700" />
+              <Package className="h-5 w-5 text-indigo-300" />
               <span className="fraunces-medium text-indigo-800">Quality Products</span>
             </div>
             <div className="px-6 py-3 flex items-center space-x-2">
-              <Sparkles className="h-5 w-5 text-indigo-700" />
+              <Sparkles className="h-5 w-5 text-indigo-300" />
               <span className="fraunces-medium text-indigo-800">Expert Designers</span>
             </div>
-          </motion.div>
+          </motion.div> */}
 
           {/* CTA Buttons */}
           <motion.div
@@ -77,7 +77,7 @@ export function Hero() {
             
             <Button
               onClick={() => navigate('/designs')}
-              className="btn-secondary px-8 py-4 text-lg fraunces-medium"
+              className="btn-glass px-8 py-4 text-lg fraunces-medium"
             >
               Browse Designs
             </Button>

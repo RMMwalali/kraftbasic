@@ -140,10 +140,7 @@ export function Header() {
                 whileHover={{ scale: 1.05 }}
                 className="flex items-center space-x-2"
               >
-                <div className="w-7 md:w-8 h-7 md:h-8 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-lg flex items-center justify-center shadow-lg">
-                  <span className="text-white font-bold text-xs md:text-sm">P</span>
-                </div>
-                <span className="text-lg md:text-xl font-bold text-gray-900">PrintCraft</span>
+                <span className="text-lg md:text-2xl font-bold text-purple-600">PrintCraft</span>
               </motion.div>
             </Link>
 
@@ -323,7 +320,7 @@ export function Header() {
                         <span>Dashboard</span>
                       </Link>
                       <Link
-                        to="/profile"
+                        to="/settings"
                         className="flex items-center space-x-2 px-4 py-2 text-gray-700 hover:bg-gray-100/50 transition-colors"
                         onClick={() => setIsUserMenuOpen(false)}
                       >
@@ -352,8 +349,8 @@ export function Header() {
                     Sign In
                   </Button>
                   <Button 
-                    size="sm" 
-                    glassmorphic
+                    size="sm"
+                    variant='ghost'                    glassmorphic
                     onClick={() => setIsLoginModalOpen(true)}
                   >
                     Sign Up

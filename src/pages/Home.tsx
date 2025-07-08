@@ -85,7 +85,7 @@ const Home: React.FC = () => {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="text-4xl font-bold mb-6"
+              className="text-4xl font-bold mb-6 fraunces-black text-purple-600"
             >
               Start Creating Your Custom Product
             </motion.h2>
@@ -116,10 +116,10 @@ const Home: React.FC = () => {
               </div>
               
               <div className="icon-container">
-                <Package className="h-8 w-8 text-gray-600" />
+                <Package className="h-8 w-8 text-purple-600" />
               </div>
               
-              <h3 className="text-heading-medium mb-3">Start with Product</h3>
+              <h3 className="fraunces-black text-purple-600 mb-3 ">Start with Product</h3>
               <p className="text-body-medium mb-6">
                 Choose your product first, then find the perfect design to customize it
               </p>
@@ -134,7 +134,7 @@ const Home: React.FC = () => {
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
                   exit={{ opacity: 0, height: 0 }}
-                  className="mt-4 p-4 glass border-l-4 border-gray-800 text-left"
+                  className="mt-4 p-4 glass border-l-4 border-gray-800 text-purple-600 text-left"
                 >
                   <p className="text-body-small font-medium mb-2">Example:</p>
                   <p className="text-body-small">
@@ -159,10 +159,10 @@ const Home: React.FC = () => {
               </div>
               
               <div className="icon-container">
-                <Palette className="h-8 w-8 text-gray-600" />
+                <Palette className="h-8 w-8 text-purple-600" />
               </div>
               
-              <h3 className="text-heading-medium mb-3">Start with Design</h3>
+              <h3 className="fraunces-black text-purple-600 mb-3">Start with Design</h3>
               <p className="text-body-medium mb-6">
                 Browse amazing designs first, then choose the perfect product to print on
               </p>
@@ -195,7 +195,7 @@ const Home: React.FC = () => {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="text-heading-large text-center mb-8"
+              className="text-2xl text-center mb-8 fraunces-black text-purple-600"
             >
               Quick Picks - Select Multiple Items
             </motion.h3>
